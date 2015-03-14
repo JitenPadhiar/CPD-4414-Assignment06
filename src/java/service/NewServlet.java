@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package service;
 
 import java.sql.Connection;
@@ -12,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,8 +23,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 
 /**
  *
@@ -35,26 +33,25 @@ public class NewServlet {
 
     @GET
     @Produces("application/json")
-    
+
     public Response doGet() {
-            
+
         return Response.ok(getResults("SELECT * FROM product")).build();
-        
+
     }
-    
+
     @GET
     @Path("{id}")
-    
+
     public Response getNew(@PathParam("id") String id) {
-        
-        
+
         return Response.ok(getResults("SELECT * FROM product WHERE productId=?", id)).build();
     }
 
     private String getResults(String query, String... params) {
 
         StringBuilder sb = new StringBuilder();
-
+        JsonObject obj = null;
         try (Connection conn = Connect.getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(query);
@@ -64,15 +61,17 @@ public class NewServlet {
             }
 
             ResultSet rs = pstmt.executeQuery();
-            JSONObject obj = new JSONObject();
-            while (rs.next()) {
-                
 
-                obj.put("ProductID", rs.getInt("productId"));
-                obj.put("Name", rs.getString("name"));
-                obj.put("Description", rs.getString("description"));
-                obj.put("Quantity", rs.getInt("quantity"));
-                sb.append(obj.toJSONString());
+            while (rs.next()) {
+
+                obj = Json.createObjectBuilder()
+                        .add("ProductID", rs.getInt("productId"))
+                        .add("Name", rs.getString("name"))
+                        .add("Description", rs.getString("description"))
+                        .add("Quantity", rs.getInt("quantity"))
+                        .build();
+
+                sb.append(obj.toString());
 
             }
 
@@ -86,46 +85,45 @@ public class NewServlet {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    
-    public Response doPost(JsonObject obj ) {
+
+    public Response doPost(JsonObject obj) {
 
         //JSONObject obj = new JSONObject();
         String name = obj.getString("name");
         String quantity = String.valueOf(obj.getInt("quantity"));
-        String description =obj.getString("description");
+        String description = obj.getString("description");
 
         doUpdate("INSERT INTO product (name,description,quantity) VALUES (?,?,?)", name, description, quantity);
-        
-        
+
         return Response.ok(obj).build();
 
     }
+
     @PUT
     @Path("{productId}")
-    public Response doPut(@PathParam("productId")  String id,  JsonObject obj)  {
+    public Response doPut(@PathParam("productId") String id, JsonObject obj) {
 
        // JSONObject obj = (JSONObject) new JSONParser().parse(st);
-      //  id =  obj.getString("productId");
-        String name =  obj.getString("name");
+        //  id =  obj.getString("productId");
+        String name = obj.getString("name");
         String quantity = String.valueOf(obj.getInt("quantity"));
-        String description =  obj.getString("description");
+        String description = obj.getString("description");
 
         Connection conn = Connect.getConnection();
         doUpdate("UPDATE product SET name=?,description=?,quantity=? where productId=? ", name, description, quantity, id);
-       
+
         return Response.ok(obj).build();
 
     }
 
     @DELETE
     @Path("{productId}")
-    public Response doDelete(@PathParam("productId") String id)  {
+    public Response doDelete(@PathParam("productId") String id) {
 
         doUpdate("DELETE FROM product WHERE productId=? ", id);
-        
+
         return Response.ok().build();
 
-       
     }
 
     private void doUpdate(String query, String... params) {
