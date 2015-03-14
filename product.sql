@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 24, 2015 at 04:39 AM
+-- Generation Time: Mar 14, 2015 at 09:21 PM
 -- Server version: 5.6.21
--- PHP Version: 5.5.19
+-- PHP Version: 5.6.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -31,17 +31,18 @@ CREATE TABLE IF NOT EXISTS `product` (
   `name` varchar(15) NOT NULL,
   `description` varchar(15) NOT NULL,
   `quantity` int(10) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `product`
 --
 
 INSERT INTO `product` (`productId`, `name`, `description`, `quantity`) VALUES
-(1, 'lorem', 'lorem ipsum', 4),
-(2, 'dolor', 'dolor sit', 12),
+(2, 'Jit', 'Padhiar', 250),
 (4, 'chirag', 'chirag patel ', 14),
-(5, 'screww', 'dadadada', 46);
+(5, 'screww', 'dadadada', 46),
+(6, 'dolor', 'dolor sit', 12),
+(7, 'Jiten', 'Padhiar', 250);
 
 --
 -- Indexes for dumped tables
@@ -61,7 +62,7 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-MODIFY `productId` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `productId` int(10) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

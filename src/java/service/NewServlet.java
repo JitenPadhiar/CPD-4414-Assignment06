@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,8 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 
 /**
  *
@@ -86,12 +87,12 @@ public class NewServlet {
     @Consumes("application/json")
     @Produces("application/json")
     
-    public Response doPost(String st) {
+    public Response doPost(JsonObject obj ) {
 
-        JSONObject obj = new JSONObject();
-        String name = (String) obj.get("name");
-        String quantity = (String) obj.get("quantity");
-        String description = (String) obj.get("description");
+        //JSONObject obj = new JSONObject();
+        String name = obj.getString("name");
+        String quantity = String.valueOf(obj.getInt("quantity"));
+        String description =obj.getString("description");
 
         doUpdate("INSERT INTO product (name,description,quantity) VALUES (?,?,?)", name, description, quantity);
         
@@ -100,14 +101,14 @@ public class NewServlet {
 
     }
     @PUT
-    @Path("{id}")
-    public Response doPut(@PathParam("productId") int ProductID, String st) throws ParseException  {
+    @Path("{productId}")
+    public Response doPut(@PathParam("productId")  String id,  JsonObject obj)  {
 
-        JSONObject obj = (JSONObject) new JSONParser().parse(st);
-        String id = (String) obj.get("productId");
-        String name = (String) obj.get("name");
-        String quantity = (String) obj.get("quantity");
-        String description = (String) obj.get("description");
+       // JSONObject obj = (JSONObject) new JSONParser().parse(st);
+      //  id =  obj.getString("productId");
+        String name =  obj.getString("name");
+        String quantity = String.valueOf(obj.getInt("quantity"));
+        String description =  obj.getString("description");
 
         Connection conn = Connect.getConnection();
         doUpdate("UPDATE product SET name=?,description=?,quantity=? where productId=? ", name, description, quantity, id);
@@ -117,7 +118,7 @@ public class NewServlet {
     }
 
     @DELETE
-    @Path("{id}")
+    @Path("{productId}")
     public Response doDelete(@PathParam("productId") String id)  {
 
         doUpdate("DELETE FROM product WHERE productId=? ", id);
