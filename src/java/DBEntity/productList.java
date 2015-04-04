@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package DBEntity;
 
 import java.sql.Connection;
@@ -25,18 +24,17 @@ import service.NewServlet;
  *
  * @author c0644689
  */
-
 @Singleton
 
 public class productList {
-    
+
     @EJB
     NewServlet service;
-  
+
     public List<product> productList;
-    
-     public productList() {
-        
+
+    public productList() {
+
         product product = new product();
 
         try (Connection conn = Connect.getConnection()) {
@@ -61,13 +59,6 @@ public class productList {
 
     }
 
-    public void add(product product) {
-
-        service.doPost(product.toJSON());
-        productList.add(product);
-
-    }
-
     public void remove(product product) {
 
         int id = product.productID;
@@ -82,26 +73,33 @@ public class productList {
 
     }
 
+    public void add(product product) {
+
+        service.doPost(product.toJSON());
+        productList.add(product);
+
+    }
+
     public void set(int id, product product) {
         service.doPut(String.valueOf(id), product.toJSON());
 
     }
 
-    public JsonArray toJSON(){
-        
+    public JsonArray toJSON() {
+
         JsonArray obj = null;
-        
-        for(product product : productList){
-             JsonObject json = Json.createObjectBuilder()
+
+        for (product product : productList) {
+            JsonObject json = Json.createObjectBuilder()
                     .add("productId", product.productID)
                     .add("name", product.name)
-                    .add("description",  product.description)
+                    .add("description", product.description)
                     .add("quantity", product.quantity)
                     .build();
-         obj.add(json);
+            obj.add(json);
         }
-        
+
         return obj;
     }
-    
+
 }
