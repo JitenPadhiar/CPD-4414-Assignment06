@@ -6,9 +6,11 @@
 package DBEntity;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,14 +26,12 @@ import service.NewServlet;
  *
  * @author c0644689
  */
-@Singleton
 
+@Singleton
 public class productList {
 
-    @EJB
-    NewServlet service;
 
-    public List<product> productList;
+    public List<product> productList = new ArrayList<product>();
 
     public productList() {
 
@@ -44,7 +44,7 @@ public class productList {
 
             while (rs.next()) {
 
-                product.productID = rs.getInt("productID");
+                product.productId = rs.getInt("productId");
                 product.name = rs.getString("name");
                 product.description = rs.getString("description");
                 product.quantity = rs.getInt("quantity");
@@ -59,30 +59,48 @@ public class productList {
 
     }
 
-    public void remove(product product) {
+    public void remove(product product) throws Exception {
 
-        int id = product.productID;
-        service.doDelete(String.valueOf(id));
-        productList.remove(product);
+        remove(product.productId);
+    }
+
+    public void remove(int id) throws Exception {
+
+        int value = doUpdate("DELETE FROM product where productId=? ", String.valueOf(id));
+        if (value > 0) {
+            product dt = getNew(id);
+            productList.remove(dt);
+
+        } else {
+            throw new Exception("Error");
+        }
 
     }
 
-    public void remove(int id) {
+    public void add(product product) throws Exception {
 
-        service.doDelete(String.valueOf(id));
+        int value = doUpdate("INSERT INTO product (productId, name,description,quantity) VALUES (?,?,?,?)", String.valueOf(product.productId), product.name, product.description, String.valueOf(product.quantity));
 
+        if (value > 0) {
+            productList.add(product);
+
+        } else {
+            throw new Exception("Error");
+        }
     }
 
-    public void add(product product) {
+    public void set(int id, product product) throws Exception {
+        int data = doUpdate("UPDATE product SET name=?,description=?,quantity=? where productId=?", product.name, product.description, String.valueOf(product.quantity), String.valueOf(product.productId));
 
-        service.doPost(product.toJSON());
-        productList.add(product);
+        if (data > 0) {
+            product dt = getNew(id);
+            dt.setName(product.name);
+            dt.setDescription(product.getDescription());
+            dt.setQuantity(product.getQuantity());
 
-    }
-
-    public void set(int id, product product) {
-        service.doPut(String.valueOf(id), product.toJSON());
-
+        } else {
+            throw new Exception("Error");
+        }
     }
 
     public JsonArray toJSON() {
@@ -91,7 +109,7 @@ public class productList {
 
         for (product product : productList) {
             JsonObject json = Json.createObjectBuilder()
-                    .add("productId", product.productID)
+                    .add("productId", product.productId)
                     .add("name", product.name)
                     .add("description", product.description)
                     .add("quantity", product.quantity)
@@ -102,4 +120,32 @@ public class productList {
         return obj;
     }
 
+    private int doUpdate(String query, String... params) {
+
+        int str = 0;
+        try (Connection conn = Connect.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            for (int i = 1; i <= params.length; i++) {
+                pstmt.setString(i, params[i - 1]);
+            }
+            pstmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(NewServlet.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return str;
+    }
+
+    private product getNew(int id) {
+        product value = null;
+        for (product product : productList) {
+            if (product.getProductID() == id) {
+                value = product;
+            }
+        }
+
+        return value;
+    }
 }

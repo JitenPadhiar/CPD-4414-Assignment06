@@ -15,7 +15,7 @@ import javax.json.JsonObject;
  */
 public class product {
     
-    public int productID;
+    public int productId;
     public String name;
     public String description;
     public int quantity;
@@ -26,7 +26,7 @@ public class product {
     }
 
     public product(int productID, String name, String description, int quantity) {
-        this.productID = productID;
+        this.productId = productID;
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -34,7 +34,7 @@ public class product {
     
     public product(JsonObject obj ){
         
-        this.productID = obj.getInt("productID");
+        this.productId = obj.getInt("productId");
         this.name = obj.getString("name");
         this.description = obj.getString("description");
         this.quantity = obj.getInt("quantity");
@@ -43,7 +43,7 @@ public class product {
     
     public JsonObject toJSON(){
         JsonObject obj = Json.createObjectBuilder()
-                .add("productID",this.productID)
+                .add("productID",this.productId)
                 .add("name",this.name)
                 .add("descrition",this.description)
                 .add("quantity",this.quantity)
@@ -54,11 +54,11 @@ public class product {
     }
     
     public int getProductID() {
-        return productID;
+        return productId;
     }
 
     public void setProductID(int productID) {
-        this.productID = productID;
+        this.productId = productID;
     }
 
     public String getName() {

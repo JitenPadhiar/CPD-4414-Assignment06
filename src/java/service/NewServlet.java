@@ -125,8 +125,9 @@ public class NewServlet {
 
     }
 
-    private void doUpdate(String query, String... params) {
-
+    private int doUpdate(String query, String... params) {
+        
+        int str = 0;
         try (Connection conn = Connect.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query);
             for (int i = 1; i <= params.length; i++) {
@@ -138,7 +139,7 @@ public class NewServlet {
             Logger.getLogger(NewServlet.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-
+        return str;
     }
 
 }
